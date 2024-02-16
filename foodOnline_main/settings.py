@@ -75,10 +75,15 @@ WSGI_APPLICATION = 'foodOnline_main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'foodonline',
+        'USER': 'root',
+        'PASSWORD': '',  
+        'HOST': '/opt/lampp/var/mysql/mysql.sock',  # Update this path
+        'PORT': '3306',
     }
 }
+
 
 
 # Password validation
