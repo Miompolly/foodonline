@@ -15,6 +15,5 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodOnline_main.settings')
 
 application = get_wsgi_application()
 
-def handler(event, context):
-    return application(event, context)
+app = application
 
