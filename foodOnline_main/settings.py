@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-u6q2u##8t*g4marmk%&x(m+hmzj#d_jxx19p)(j+1x+l++9jpd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app','127.0.0.1']
 
 
 # Application definition
@@ -75,14 +76,24 @@ WSGI_APPLICATION = 'foodOnline_main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'foodonline',
-        'USER': 'root',
-        'PASSWORD': '',  
-        'HOST': '/opt/lampp/var/mysql/mysql.sock',  # Update this path
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.mgpstpykufcvyhtxjyza',
+        'PASSWORD': 'Yawhey@123!',  
+        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',  # Update this path
+        'PORT': '5432',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'foodonline',
+#         'USER': 'root',
+#         'PASSWORD': '',  
+#         'HOST': '/opt/lampp/var/mysql/mysql.sock',  # Update this path
+#         'PORT': '3306',
+#     }
+# }
 
 
 

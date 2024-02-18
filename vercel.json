@@ -1,0 +1,18 @@
+{
+    "version":2,
+    "builds":[
+        {
+        "src": "foodOnline_main/wsgi.py",
+        "use": "@vercel/python",
+        "config": {"maxlambdaSize":"15mb","runtime":"python3.9"}
+        }
+    ],
+    "routes":[
+        {
+            "src": "/(.*)",
+            "dest": "foodOnline_main/wsgi.py"
+        }
+    ]
+    
+
+}
