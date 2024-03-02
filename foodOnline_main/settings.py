@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts'
+    'accounts',
+   
 ]
 
 MIDDLEWARE = [
@@ -86,12 +87,14 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+# settings.py
+
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
+#         'ENGINE': 'django.contrib.gis.db.backends.mysql',
 #         'NAME': 'foodonline',
 #         'USER': 'root',
-#         'PASSWORD': '',  
+#         'PASSWORD': '',
 #         'HOST': '/opt/lampp/var/mysql/mysql.sock',  # Update this path
 #         'PORT': '3306',
 #     }

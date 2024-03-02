@@ -1,0 +1,189 @@
+<!-- templates/base.html -->
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}home {% endblock %}</title>
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700,800">
+	<!-- Google Font Family Link End -->
+
+	<!-- CSS -->
+	<link href="{% static 'css/iconmoon.css' %}" rel="stylesheet">
+	<link href="{% static 'css/style.css' %}" rel="stylesheet">
+	<link href="{% static 'css/cs-foodbakery-plugin.css' %}" rel="stylesheet">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link href="{% static 'css/bootstrap-slider.css' %}" rel="stylesheet">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<!-- JAVASCRIPT -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="{% static 'js/modernizr.js' %}"></script>
+	<script src="{% static 'js/bootstrap.js' %}"></script>
+
+	<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script src="{% static 'js/custom.js' %}"></script>
+
+	<!-- Include the PayPal JavaScript SDK -->
+	<script src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&currency=USD"></script>
+
+	<!-- Include Datatables plugin script and css -->
+	<link rel="stylesheet" href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+	<script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+</head>
+
+<body>
+
+	<div class="wrapper">
+		<!-- Header Start -->
+		<header id="header">
+			<div class="main-header">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+							<div class="logo">
+								<figure>
+									<a href="#" class="light-logo">
+										<img src="{% static 'logo/foodOnlineLogo.png' %}" alt="FoodOnline" width="250" alt="FoodOnline" width="250">
+									</a>
+								</figure>
+							</div>
+							<div class="main-location ml-5">
+								<ul>
+									<li class="location-has-children choose-location">
+										<form action="#">
+											<input type="text" value="" name="location" id="location"
+												placeholder="Your current location" autocomplete="off">
+											<span id="foodbakery_radius_location_open"
+												class="foodbakery-radius-location"><i class="icon-target5"></i></span>
+										</form>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+							<div class="login-option">
+								<!-- <a href="#">
+									<i class="fa fa-shopping-cart text-danger" style="font-size: 20px;"></i>
+									<span class="badge badge-warning" id="cart_counter"
+										style="border-radius: 50px; position: relative; bottom:10px; left: -5px;">0</span>
+								</a> -->
+								<!-- <a href="#"
+									class="btn btn-outline-danger text-uppercase font-weight-bold">Marketplace</a>
+								<a class="cs-color cs-popup-joinus-btn login-popup" href="#">My Account</a>
+								<a class="cs-color cs-popup-joinus-btn login-popup text-danger" href="#">Logout</a> -->
+								<a class="cs-color cs-popup-joinus-btn login-popup" href="#">Login</a> /
+								<span><a href="#"
+										class="cs-color cs-popup-joinus-btn login-popup ml-0">Register</a></span>
+								<a class="get-start-btn" href="#">Register Restaurant</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- Header End -->
+	</div>
+
+
+
+	{% block content %}
+
+	{% endblock %}
+
+	<footer id="footer" class="footer-style-2">
+		<div class="footer-widget">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="widget widget-newsletter">
+							<div class="widget-title">
+								<h5>Subscribe to our Newsletter</h5>
+							</div>
+							<div class="fieldset">
+								<form action="#">
+									<div class="field-holder">
+										<label>
+											<i class=" icon-envelope3"></i>
+											<input type="text" class="field-input"
+												placeholder=" Enter Your Email Address...">
+										</label>
+									</div>
+									<div class="field-holder btn-holder">
+										<input class="subscribe-btn bgcolor" type="submit" value="Sign Up">
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="copyright-sec">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="copyright-inner">
+							<div class="copy-right">
+								<p>© 2024 FoodBackelly. All Rights Reserved. Developed By <a href="#">Miompolly</a>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div> <!-- /.cs-copyright -->
+	</footer>
+</body>
+
+
+
+<script>
+	var x = document.getElementById("location");
+	var current_location = sessionStorage.getItem("current_location")
+	if (current_location != "") {
+		x.value = current_location;
+	}
+
+	function getLocation() {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(showPosition);
+		} else {
+			x.innerHTML = "Geolocation is not supported by this browser.";
+		}
+	}
+
+	function showPosition(position) {
+		var lat = position.coords.latitude
+		var lng = position.coords.longitude
+
+		// var lat = '19.0713949'
+		// var lng = '72.9984126'
+
+		// hit AJAX request to googlemaps api endpoint and get the location data using those lat and lng
+		var GOOGLE_API_KEY = "{{ GOOGLE_API_KEY }}"
+		var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "+&key=" + GOOGLE_API_KEY
+
+		$.ajax({
+			url: url,
+			type: "GET",
+			success: function (response) {
+				var current_location = response.results[0].formatted_address
+				x.value = current_location
+				sessionStorage.setItem("current_location", current_location)
+				window.location = '?lat=' + lat + '&lng=' + lng
+			}
+		})
+	}
+</script>
+
+<script src="{% static 'js/scripts.js' %}"></script>
+<script src="{% static 'js/functions.js' %}"></script>
+
+
+</html>

