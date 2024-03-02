@@ -76,26 +76,26 @@ WSGI_APPLICATION = 'foodOnline_main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'postgres.mgpstpykufcvyhtxjyza',
-#         'PASSWORD': 'Yawhey@123!',  
-#         'HOST': 'aws-0-eu-central-1.pooler.supabase.com',  # Update this path
-#         'PORT': '5432',
-#     }
-# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'foodonline',
-        'USER': 'root',
-        'PASSWORD': '',  
-        'HOST': '/opt/lampp/var/mysql/mysql.sock',  # Update this path
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.mgpstpykufcvyhtxjyza',
+        'PASSWORD': 'Yawhey@123!',  
+        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',  # Update this path
+        'PORT': '5432',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'foodonline',
+#         'USER': 'root',
+#         'PASSWORD': '',  
+#         'HOST': '/opt/lampp/var/mysql/mysql.sock',  # Update this path
+#         'PORT': '3306',
+#     }
+# }
 
 
 AUTH_USER_MODEL='accounts.User'
@@ -140,6 +140,19 @@ STATIC_ROOT=BASE_DIR/'static'
 STATICFILES_DIRS=[
     'foodOnline_main/static'
 ]
+
+# Media files configuration
+
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT=BASE_DIR/'media'
+
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
